@@ -10,7 +10,7 @@ $_clipflag	=	$True
 $_display 	=	$false
 $_RDNS		=	$false
 $_resolve	=	$false
-$_AbuselPBD	 =	$false
+$_AbuselPBD	=	$false
 $_file_		=	$false
 $_mem		=	$false
 #############
