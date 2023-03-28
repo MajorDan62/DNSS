@@ -11,7 +11,7 @@ $_clipflag	=	$True
 $_display 	=	$false
 $_RDNS		=	$false
 $_resolve	=	$false
-$_AbuselPBD	 =	$false
+$_AbuselPBD	=	$false
 $_file_		=	$false
 #############
 # FUNCTIONS #
@@ -20,20 +20,20 @@ function find_domain_ISP($ip)
 {	
 	$_url_="https://www.abuseipdb.com/check/$ip" 
 	Invoke-WebRequest -uri $_url_ -outfile "temp.txt"
-	$linenumber		=	( select-string -path temp.txt  -pattern "<th>ISP</th>").linenumber
-	$x			=	($linenumber + 1)
-    	$result			=	Get-Content "temp.txt "| Select-Object  -Skip $x  -First 1
+	$linenumber	=	( select-string -path temp.txt  -pattern "<th>ISP</th>").linenumber
+	$x		=	($linenumber + 1)
+    	$result		=	Get-Content "temp.txt "| Select-Object  -Skip $x  -First 1
 
-	$linenumber		=	( select-string -path temp.txt  -pattern "<th>Domain Name</th>").linenumber
-	$x			=	($linenumber + 1)	
-	$domain			=	Get-Content "temp.txt "| Select-Object  -Skip ($x)  -First 1
+	$linenumber	=	( select-string -path temp.txt  -pattern "<th>Domain Name</th>").linenumber
+	$x		=	($linenumber + 1)	
+	$domain		=	Get-Content "temp.txt "| Select-Object  -Skip ($x)  -First 1
 
-	$linenumber		=	( select-string -path temp.txt  -pattern "<th>Country</th>").linenumber
-	$x			=	($linenumber + 1)	
-	$country		=	Get-Content "temp.txt "| Select-Object  -Skip ($x+1)  -First 
-	$linenumber		=	( select-string -path temp.txt  -pattern "was found in our database!").linenumber
+	$linenumber	=	( select-string -path temp.txt  -pattern "<th>Country</th>").linenumber
+	$x		=	($linenumber + 1)	
+	$country	=	Get-Content "temp.txt "| Select-Object  -Skip ($x+1)  -First 
+	$linenumber	=	( select-string -path temp.txt  -pattern "was found in our database!").linenumber
 	if ($linenumber -gt 0 ){if ($_AbuselPBD){[system.Diagnostics.Process]::Start("msedge",$_url_)}$abuse="ABUSE LOGGED"}else{$abuse="NO ABUSE LOGGED"}
-	$result			=	$cr + "  ISP    = $result "+ $cr + "  DN     = " + $domain + $cr +  "  LOC    = " + $country +  $cr +  "  STATUS = " + $abuse +$cr
+	$result		=	$cr + "  ISP    = $result "+ $cr + "  DN     = " + $domain + $cr +  "  LOC    = " + $country +  $cr +  "  STATUS = " + $abuse +$cr
     return $result
 }
 
@@ -41,13 +41,13 @@ if ($args.count -gt 0)
 {
 	for ($i=0;$i -lt $args.count;$i++)
 	{
-        if ($args[$i] -eq $null)					{$_display		=	$True}
-		if ($args[$i].ToUpper() -eq "-V")			{$_display		=	$True}
-		if ($args[$i].ToUpper() -eq "-NOCLIP")			{$_clipflag		=	$False}
-		if ($args[$i].ToUpper() -eq "-IN")			{$_data_file	=	"./"+$args[($i+1)];$_file_=$true}
-		if ($args[$i].ToUpper() -eq "-R")			{$_RDNS			=	$True}
-        if ($args[$i].ToUpper() -eq "-P")				{$_resolve		=	$True}
-    	if ($args[$i].Toupper() -eq "-LAUNCH")		 		{$_AbuselPBD	=	$True}
+        if ($args[$i] -eq $null)			{$_display	=	$True}
+		if ($args[$i].ToUpper() -eq "-V")	{$_display	=	$True}
+		if ($args[$i].ToUpper() -eq "-NOCLIP")	{$_clipflag	=	$False}
+		if ($args[$i].ToUpper() -eq "-IN")	{$_data_file	=	"./"+$args[($i+1)];$_file_=$true}
+		if ($args[$i].ToUpper() -eq "-R")	{$_RDNS		=	$True}
+       		if ($args[$i].ToUpper() -eq "-P")	{$_resolve	=	$True}
+    		if ($args[$i].Toupper() -eq "-LAUNCH")	{$_AbuselPBD	=	$True}
 	}
 }
 else {$_display=$True} 
@@ -107,26 +107,26 @@ if (!$_RDNS)
 					{
 					$_output=""
 					do
+					{
+						if (($result[$count].ipaddress) -like "*.*" )
 						{
-							if (($result[$count].ipaddress) -like "*.*" )
-							{
-								$output= $result[$count].name + " - " + $result[$count].ipaddress + " **DUPLICATE**"
-								write-host $output
-								$_output= $_output+ $result[$count].name + " - " + $result[$count].ipaddress + " **DUPLICATE**"+$cr
-							}
-							$count=$count + 1
-						}	
+							$output= $result[$count].name + " - " + $result[$count].ipaddress + " **DUPLICATE**"
+							write-host $output
+							$_output= $_output+ $result[$count].name + " - " + $result[$count].ipaddress + " **DUPLICATE**"+$cr
+						}
+						$count=$count + 1
+					}	
 					while ($result.count -gt $count )
 					$output=$_output
 					}
 					else
+					{
+						if (($result[$count].ipaddress) -like "*.*" )
 						{
-							if (($result[$count].ipaddress) -like "*.*" )
-							{
-								$output= $result.name + " - " + $result.ipaddress
-								write-host $output
-							}
+							$output= $result.name + " - " + $result.ipaddress
+							write-host $output
 						}
+					}
 					$summary=$summary+$output+$cr
 					}
 				}
@@ -160,8 +160,8 @@ if (!$_RDNS)
 				$failed=$false
 				try
 				{
-					$result		=	[system.net.dns]::gethostentry($line)
-					$failed		=	$false
+					$result	=	[system.net.dns]::gethostentry($line)
+					$failed	=	$false
 				}
 				catch 
 				{
@@ -193,20 +193,20 @@ if (!$_RDNS)
 								$count=$count + 1
 							}	
 						while ($result.count -gt $count )
-						$output=$_output
+						$output	=	$_output
 						}
 						else
 						{
 							$output= $line + " resolves to " + $result.hostname 
 							if ($_resolve)
 							{
-									$_ip_		=	$line
-									$_rv_		=	find_domain_ISP($_ip_)
-									$output		= 	 $output +  $_rv_
+								$_ip_	=	$line
+								$_rv_	=	find_domain_ISP($_ip_)
+								$output	= 	 $output +  $_rv_
 							}
 							write-hoAst $output 
 						}
-						$summary=$summary+$output+$cr
+					$summary=$summary+$output+$cr
 					}
 				}
 			}
